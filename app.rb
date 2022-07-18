@@ -3,17 +3,12 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
-
-$memos_file = 'json/memos.json'
-
-$memos = File.open($memos_file) do |memo|
-  JSON.load(memo)
-end
-
-$id_max = 0
+require './db/database'
+require 'sinatra/base'
 
 get '/' do
   @title = 'top'
+  @memos = Data.all
   erb :top
 end
 
@@ -24,56 +19,36 @@ end
 
 get '/memos/:id' do
   @title = 'show'
-  @memo = {}
-  $memos.each do |memo|
-    @memo = memo if memo['id'] == h(params[:id]).to_s
-  end
+  @memo = Data.find_memo(h(params[:id]).to_s)
   erb :show
 end
 
 get '/memos/:id/edit' do
   @title = 'edit'
   @memo = {}
-  $memos.each do |memo|
-    @memo = memo if memo['id'] == h(params[:id]).to_s
-  end
+  @memo = Data.find_memo(h(params[:id]).to_s)
   erb :edit
 end
 
-post '/memos/create' do
-  $id_max = $id_max + 1
-  $memos << { 'id' => $id_max.to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
-  File.open($memos_file, 'w') do |file|
-    JSON.dump($memos, file)
-  end
+post '/memos' do
+  id_max = Data.read_idmax.to_i
+  id_max += 1
+  memos = Data.all
+  memos << { 'id' => id_max.to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
+  Data.print_memos(memos)
+  Data.print_idmax(id_max.to_s)
   redirect to('/')
 end
 
 patch '/memos/:id' do
-  index = -1
-  $memos.each_with_index do |memo, i|
-    index = i if memo['id'] == h(params[:id]).to_s
-  end
+  p params[:id]
 
-  $memos[index] = { 'id' => h(params[:id]).to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
-
-  File.open($memos_file, 'w') do |file|
-    JSON.dump($memos, file)
-  end
+  Data.update_memo(h(params[:id]).to_s, h(params[:title]).to_s, h(params[:content]).to_s)
   redirect to('/')
 end
 
 delete '/memos/:id' do
-  index = -1
-  $memos.each_with_index do |memo, i|
-    index = i if memo['id'] == h(params[:id]).to_s
-  end
-
-  $memos.delete_at(index)
-
-  File.open($memos_file, 'w') do |file|
-    JSON.dump($memos, file)
-  end
+  Data.delete_memo(h(params[:id]).to_s)
   redirect to('/')
 end
 

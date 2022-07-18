@@ -1,9 +1,7 @@
-
 <ul>
-<% $memos.each do |memo| %>
+<% @memos.each do |memo| %>
 <li><a href= "/memos/<%= memo["id"] %> "> <%= memo["title"] %></a></li>
-<% $id_max=((memo["id"].to_i>$id_max) ? memo["id"].to_i: $id_max) %>
+<%  %>
 <% end%>
-
 </ul>
 <button onclick="location.href='/memos/new'">追加</button>

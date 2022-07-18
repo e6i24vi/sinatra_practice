@@ -53,6 +53,7 @@ PLATFORMS
   arm64-darwin-21
 
 DEPENDENCIES
+  json
   rubocop-fjord
   sinatra
   sinatra-contrib
