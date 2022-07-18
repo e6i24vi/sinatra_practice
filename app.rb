@@ -2,7 +2,6 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
 require './db/database'
 require 'sinatra/base'
 
@@ -31,18 +30,14 @@ get '/memos/:id/edit' do
 end
 
 post '/memos' do
-  id_max = Data.read_idmax.to_i
-  id_max += 1
   memos = Data.all
-  memos << { 'id' => id_max.to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
+  next_id =  (memos.map { |memo| memo['id'].to_i }.max || 0) + 1
+  memos << { 'id' => next_id.to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
   Data.print_memos(memos)
-  Data.print_idmax(id_max.to_s)
   redirect to('/')
 end
 
 patch '/memos/:id' do
-  p params[:id]
-
   Data.update_memo(h(params[:id]).to_s, h(params[:title]).to_s, h(params[:content]).to_s)
   redirect to('/')
 end
