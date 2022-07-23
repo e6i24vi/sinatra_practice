@@ -30,10 +30,8 @@ get '/memos/:id/edit' do
 end
 
 post '/memos' do
-  memos = Data.all
-  next_id =  (memos.map { |memo| memo['id'].to_i }.max || 0) + 1
-  memos << { 'id' => next_id.to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
-  Data.print_memos(memos)
+  memo = { 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
+  Data.insert_memos(memo)
   redirect to('/')
 end
 
