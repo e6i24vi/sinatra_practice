@@ -1,15 +1,13 @@
-
-
 <p>題名</p>
-<div><%= @memo[:title] %></div>
+<div><%= @memo["title"] %></div>
 
 <p>内容</p>
-<div><%= @memo[:content] %></div>
+<div><%= @memo["content"] %></div>
 
 <div class="box" >
-<div ><button onclick="location.href='/memos/<%= @memo[:id] %>/edit'">変更</button></div>
+<div ><button onclick="location.href='/memos/<%= @memo["id"] %>/edit'">変更</button></div>
 <div >
-<form action="/memos/<%= @memo[:id] %>" method="post" >
+<form action="/memos/<%= @memo["id"] %>" method="post" >
   <input type="hidden" name="_method" value="DELETE">
   <input type="submit" value="削除">
 </form>
