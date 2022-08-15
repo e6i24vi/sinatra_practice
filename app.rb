@@ -2,12 +2,17 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require './db/database'
 require 'sinatra/base'
+
+require 'pg'
+
+require_relative './db/memodb'
+
+memosdb = MemosDB.new
 
 get '/' do
   @title = 'top'
-  @memos = Data.all
+  @memos = memosdb.all_memos
   erb :top
 end
 
@@ -18,32 +23,29 @@ end
 
 get '/memos/:id' do
   @title = 'show'
-  @memo = Data.find_memo(h(params[:id]).to_s)
+  @memo = memosdb.find_memo(params)
   erb :show
 end
 
 get '/memos/:id/edit' do
   @title = 'edit'
-  @memo = {}
-  @memo = Data.find_memo(h(params[:id]).to_s)
+  @memo = memosdb.find_memo(params)
   erb :edit
 end
 
 post '/memos' do
-  memos = Data.all
-  next_id =  (memos.map { |memo| memo['id'].to_i }.max || 0) + 1
-  memos << { 'id' => next_id.to_s, 'title' => h(params[:title]).to_s, 'content' => h(params[:content]).to_s }
-  Data.print_memos(memos)
+  memo = { title: params['title'], content: params['content'] }
+  memosdb.insert_memos(memo)
   redirect to('/')
 end
 
 patch '/memos/:id' do
-  Data.update_memo(h(params[:id]).to_s, h(params[:title]).to_s, h(params[:content]).to_s)
+  memosdb.update_memo(params)
   redirect to('/')
 end
 
 delete '/memos/:id' do
-  Data.delete_memo(h(params[:id]).to_s)
+  memosdb.delete_memo(params)
   redirect to('/')
 end
 
