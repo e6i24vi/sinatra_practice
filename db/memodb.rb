@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MemosData
+class MemosDB
   def initialize
     @connection = PG.connect(host: 'localhost', port: 5432, dbname: 'memo')
     @connection.exec('CREATE TABLE IF NOT EXISTS memos (id serial PRIMARY KEY,title varchar(40),content text) ')

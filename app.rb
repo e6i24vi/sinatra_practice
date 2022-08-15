@@ -8,7 +8,7 @@ require 'pg'
 
 require_relative './db/memodb'
 
-memosdb = MemosData.new
+memosdb = MemosDB.new
 
 get '/' do
   @title = 'top'
